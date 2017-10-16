@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}
+    Get Token
+{% endblock %}
+
+{% block main_content %}
+    <form id="TokenForm" action="{% url 'api:token' %}" method="POST">
+        {% csrf_token %}
+        <strong>Login</strong>
+        <br><br>
+        <fieldset>
+            <section>
+                <label class="label">Email</label>
+                <label class="input">
+                    <input type="email" name="email" placeholder="Enter Your Email Address" required>
+                </label>
+            </section>
+            <section id="email_error" style="color: red; display: none;">
+                <strong>This email id is not registered on our system. Sign-up<a href="{% url 'dashboard:sign-up' %}"> Here</a></strong>
+            </section>
+            <section id="other_errors" style="color: red;"></section>
+        </fieldset>
+        <br>
+        <footer>
+            <button type="submit">Get Login Token</button>
+        </footer>
+    </form>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#TokenForm").on('submit', function () {
+            var form = $(this);
+            var url = form.attr("action");
+            $.ajax({
+                url: url,
+                context: form,
+                data: form.serialize(),
+                method: form.attr("method"),
+                success: function (data) {
+                    if (data.error) {
+                        $("#email_error").show();
+                    }
+                    else {
+                        if (data.success) {
+                            window.location.href = data.login_page;
+                        }
+                    }
+                },
+                error: function () {
+                    $("#other_errors").html("Something went wrong. Please refresh the page and try again.")
+                }
+            });
+            return false;
+        });
+    </script>
+{% endblock %}

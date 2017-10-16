@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main_content %}
+    {% if user.is_authenticated %}
+        <a href="{% url 'api:log-out' %}" id="logout-link" style="position: fixed; right: 15px; top: 10px;">Logout</a>
+        <form id="SearchForm" action="{% url 'api:dashboard' %}" method="POST">
+            <fieldset>
+                <h1>Welcome user,</h1>
+                <section>
+                    <label class="label">Search</label>
+                    <label class="input">
+                        <input type="text" name="search" placeholder="Search Language or Country Name, City" required>
+                    </label>
+                </section>
+                <section id="other_errors" style="color: red;"></section>
+            </fieldset>
+            <br>
+            <footer>
+                <a href="" type="submit" target="_blank">Search</a>
+            </footer>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#logout-link").on('click', function () {
+            var url = $(this).attr('href');
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        window.location.href = data.login_page;
+                    }
+                },
+                error: function () {
+                    $("#other_errors").html("Something went wrong. Please refresh the page and try again.")
+                }
+            });
+            return false;
+        });
+        $("#SearchForm").on('submit', function () {
+            var form = $(this);
+            var url = form.attr("action");
+            $.ajax({
+                url: url,
+                context: form,
+                data: form.serialize(),
+                method: form.attr("method"),
+                success: function (data) {
+                    if (data.success) {
+                        window.location.href = data.dashboard_page;
+                    }
+                },
+                error: function () {
+                    $("#other_errors").html("Something went wrong. Please refresh the page and try again.")
+                }
+            });
+            return false;
+        });
+    </script>
+{% endblock %}

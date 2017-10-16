@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}
+    Login
+{% endblock %}
+
+{% block main_content %}
+    <form id="LoginForm" action="{% url 'api:login' %}" method="POST">
+        {% csrf_token %}
+        <strong>Login</strong>
+        <br><br>
+        <fieldset>
+            <section>
+                <label class="label">Enter Token</label>
+                <label class="input">
+                    <input type="text" name="token" placeholder="Enter Token" required>
+                </label>
+            </section>
+            <section id="token_error" style="color: red; display: none;">
+                <strong>This token is incorrect. Please enter again!!</strong>
+            </section>
+            <section id="other_errors" style="color: red;"></section>
+        </fieldset>
+        <br>
+        <footer>
+            <button type="submit">Login</button>
+        </footer>
+    </form>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#LoginForm").on('submit', function () {
+            var form = $(this);
+            var url = form.attr("action");
+            $.ajax({
+                url: url,
+                context: form,
+                data: form.serialize(),
+                method: form.attr("method"),
+                success: function (data) {
+                    if (data.error) {
+                        $("#token_error").show();
+                    }
+                    else if (data.success) {
+                        window.location.href = data.dashboard_page;
+                    }
+                },
+                error: function () {
+                    $("#other_errors").html("Something went wrong. Please refresh the page and try again.")
+                }
+            });
+            return false;
+        });
+    </script>
+{% endblock %}

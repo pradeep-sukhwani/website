@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Sign Up
+{% endblock %}
+
+{% block main_content %}
+    <form id="SignUpForm" action="{% url 'api:register' %}" method="POST">
+        {% csrf_token %}
+        <strong>Sign Up</strong>
+        <br><br>
+        <fieldset>
+            <section>
+                <label class="label">First Name</label>
+                <label class="input">
+                    <input type="text" name="first_name" placeholder="Enter Your First Name" required>
+                </label>
+            </section>
+            <section>
+                <label class="label">Last Name</label>
+                <label class="input">
+                    <input type="text" name="last_name" placeholder="Enter Your Last Name">
+                </label>
+            </section>
+            <section>
+                <label class="label">Email</label>
+                <label class="input">
+                    <input type="email" name="email" placeholder="Enter Your Email Address" required>
+                </label>
+            </section>
+            <section id="email_error" style="color: red; display: none;">
+                <strong>This email id is already register. Login<a href="{% url 'dashboard:get_token' %}"> Here</a></strong>
+            </section>
+            <section>
+                <label class="label">Mobile</label>
+                <label class="input">
+                    <input type="tel" name="mobile" placeholder="Enter Your Mobile Number" required>
+                </label>
+            </section>
+            <section>
+                <label class="label">Gender</label>
+                <label class="input">
+                    <select name="gender">
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
+                        <option value="3">Preferred Not To Say</option>
+                    </select>
+                </label>
+            </section>
+            <section id="other_errors" style="color: red;"></section>
+        </fieldset>
+        <br>
+        <footer>
+            <button type="submit">Sign-Up</button>
+        </footer>
+    </form>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#SignUpForm").on('submit', function () {
+            var form = $(this);
+            var url = form.attr("action");
+            $.ajax({
+                url: url,
+                context: form,
+                data: form.serialize(),
+                method: form.attr("method"),
+                success: function (data) {
+                    if (data.error) {
+                        $("#email_error").show();
+                    }
+                    else if (data.success) {
+                        window.location.href = data.token_page;
+                    }
+                },
+                error: function () {
+                    $("#other_errors").html("Something went wrong. Please refresh the page and try again.")
+                }
+            });
+            return false;
+        });
+    </script>
+{% endblock %}

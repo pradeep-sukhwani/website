@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Authentication</title>
+</head>
+<body>
+    Hi {% if user.first_name %}{{ user.first_name }}{% else %}user{% endif %},
+    Your login authentication key is {{ activation_key }}. Please enter this key to login.
+</body>
+</html>
